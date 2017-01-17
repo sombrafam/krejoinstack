@@ -1,0 +1,5 @@
+setuptools
+oslo.concurrency==3.13.0
+paramiko==2.0.2
+six==1.10.0
+oslo_concurrency==3.17.0
