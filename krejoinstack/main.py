@@ -30,7 +30,7 @@ def main():
     plugin_selector_group.add_argument("--juju", action='store_true')
     plugin_selector_group.add_argument("--devstack", action='store_true')
     plugin_selector_group.add_argument("--custom", action='store_true')
-    parser.add_argument("host")
+    parser.add_argument("host", metavar='<user@host>')
 
     for be in [JujuSessions, Devstack, CustomShells]:
         be.add_args(parser)

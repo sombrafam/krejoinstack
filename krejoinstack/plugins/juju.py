@@ -34,8 +34,16 @@ class JujuSessions(base.KRJPlugin):
 
         super(JujuSessions, self).__init__()
 
-#        self.machines, self.units = self._get_juju_info(
-#            bastion_host, bastion_user, bastion_user_pwd)
+        host = args.host.split('@')[0]
+        if len(args.host.split('@')) > 1:
+            bastion_user = args.host.split('@')[1]
+        else:
+            bastion_user = 'ubuntu'
+
+        # NOTE(erlon): Password based authentication not supported yet
+        bastion_user_pwd = None
+        self.machines, self.units = self._get_juju_info(
+            host, bastion_user, bastion_user_pwd)
 
     def _find_jujuc(self, ssh_client):
         # TODO(erlon): Fix me
