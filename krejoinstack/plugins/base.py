@@ -13,26 +13,18 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from abc import ABC, abstractmethod
+
 import krejoinstack.konsole as konsole
 
 
-class KRJPlugin(object):
+class KRJPlugin(ABC):
     name = None
 
     def __init__(self):
-
         self.konsole = konsole.Konsole()
 
     @staticmethod
-    def new():
-        pass
-
-    @staticmethod
+    @abstractmethod
     def add_args(parser):
-        pass
-
-    def help(self):
-        pass
-
-    def launch(self, konsole):
         pass
