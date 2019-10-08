@@ -1,5 +1,5 @@
-k-rejoinstack
-==================
+krejoinstack
+============
 
 Graphical version of the ./rejoin-stack.sh script of devstack. This uses a
 graphical terminal to connect to a devstack host and run Openstack services.
@@ -45,4 +45,16 @@ Or Fedora:
 5 - Run:
 
 ::
-  python rejoinstack.py [-h] <IP>
+  krejoin [-h] [--juju | --devstack | --custom-yaml] <remote host>
+    Juju Cloud options:
+      --model: The model to search for the units/machines
+      --open-regex: Open only units matching this regex
+      --no-open-regex: Open only units not mathiching this regex
+      --open-template: Load shell mode from yaml
+      --num-services: Opens N tabs for each service
+      --group-services: Group similar services into distict windows
+      --machines: Also logs into the listed machines
+      --template: Loads Juju shells based on this template
+    Custom YAML options:
+      --template: Load all shells based on this template
+

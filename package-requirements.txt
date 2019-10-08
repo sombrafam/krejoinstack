@@ -1,0 +1,8 @@
+python3
+python3-venv
+konsole
+# You need those if you want to install packages via pip
+build-essential
+libssl-dev
+libffi-dev
+python-dev

@@ -1,4 +1,3 @@
-import exceptions
 import logging
 import os
 import paramiko
@@ -22,7 +21,7 @@ class SSHClient(object):
 
             try:
                 privatekey = paramiko.RSAKey.from_private_key_file(pkfile)
-            except exceptions.IOError:
+            except IOError:
                 LOG.error('No private key found in: %s!! Please generate one with'
                           'ssh-keygen.', pkfile)
                 exit(1)
