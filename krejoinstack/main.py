@@ -50,6 +50,8 @@ def main():
         print("Error! No backend found!")
         exit(1)
 
+    backend.spawn()
+
 
 if __name__ == "__main__":
     main()

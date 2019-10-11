@@ -34,16 +34,18 @@ class JujuSessions(base.KRJPlugin):
 
         super(JujuSessions, self).__init__()
 
-        host = args.host.split('@')[0]
         if len(args.host.split('@')) > 1:
-            bastion_user = args.host.split('@')[1]
+            self.bastion_user = args.host.split('@')[0]
+            self.host = args.host.split('@')[1]
         else:
-            bastion_user = 'ubuntu'
+            self.bastion_user = 'ubuntu'
+            self.host = args.host
 
+        self.configs = args
         # NOTE(erlon): Password based authentication not supported yet
         bastion_user_pwd = None
         self.machines, self.units = self._get_juju_info(
-            host, bastion_user, bastion_user_pwd)
+            self.host, self.bastion_user)
 
     def _find_jujuc(self, ssh_client):
         # TODO(erlon): Fix me
@@ -51,6 +53,7 @@ class JujuSessions(base.KRJPlugin):
 
     def _get_juju_info(self, bastion_host, bastion_user='ubuntu',
                        bastion_user_pwd=''):
+        print("Connecting to: %s %s %s" % (bastion_host, bastion_user, bastion_user_pwd))
         client = ssh.SSHClient(bastion_host, bastion_user, bastion_user_pwd)
         jujuc_path = self._find_jujuc(client)
 
@@ -65,9 +68,53 @@ class JujuSessions(base.KRJPlugin):
         return machines, units
 
     def spawn(self):
-        for unit in self.units:
-            self.konsole.new_konsole(unit)
-            #time.sleep(0.2)
+        def _filter_units():
+
+            parsed_res = []
+            for opt_name, re_string in [
+                ("--oregex", self.configs.oregex),
+                ("--noregex", self.configs.noregex)]:
+                if re_string:
+                    print("Compiling RE: %s" % re_string)
+                    try:
+                        parsed_re = re.compile(re_string)
+                        print("parsed_re: %s" % parsed_re)
+                        parsed_res.append(parsed_re)
+                    except Exception as e:
+                        print("Error parsing %s" % opt_name)
+                        print(e)
+
+            try:
+                open_re = parsed_res[0]
+            except Exception:
+                open_re = None
+                pass
+
+            try:
+                nopen_re = parsed_res[1]
+            except Exception:
+                nopen_re = None
+                pass
+
+            fitered_units = []
+            for unit in self.units:
+                print("open_re: %s" % open_re)
+                print("unit: %s" % unit)
+                print("match: %s" % open_re.match(unit))
+                if open_re and open_re.match(unit):
+                    fitered_units.append(unit)
+                if nopen_re and nopen_re.match(unit):
+                    fitered_units.remove(unit)
+
+            return fitered_units
+
+        filtered = _filter_units()
+        if len(filtered) >= 1:
+            for unit in filtered:
+                self.konsole.new_konsole(unit)
+                self.konsole.shells[unit].ssh_connect(
+                    self.host, user=self.bastion_user)
+                self.konsole.run(unit, 'juju ssh %s' % unit)
 
     @staticmethod
     def add_args(parser):
@@ -76,10 +123,10 @@ class JujuSessions(base.KRJPlugin):
             "--model", help='The model to search for the units/machines.',
             metavar='<model name>')
         juju_parameters.add_argument(
-            "--open-regex", help='Open only units matching this regex.',
+            "--oregex", help='Open only units matching this regex.',
             metavar='<regex>')
         juju_parameters.add_argument(
-            "--no-open-regex",
+            "--noregex",
             help='Open only units not mathiching this regex.',
             metavar='<regex>')
         juju_parameters.add_argument(

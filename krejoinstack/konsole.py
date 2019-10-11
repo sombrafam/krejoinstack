@@ -64,11 +64,11 @@ class KonsoleSession(object):
         cmd.append(shell_cmd)
         LOG.debug("Runing command: %s" ' '.join(cmd))
         out = subprocess.call(cmd)
+        time.sleep(0.5)
 
     def ssh_connect(self, host, user='ubuntu'):
         ssh_login = "ssh %(user)s@%(ip)s" % {'user': user, 'ip': host}
         self.run(ssh_login)
-        time.sleep(0.5)
 
 
 class Konsole(object):
@@ -86,9 +86,12 @@ class Konsole(object):
         self.pid = proc.pid
 
         LOG.info("Created console %s", six.text_type(self.pid))
-        self.shells[0] = KonsoleSession(parent_id=self.pid, create=False)
-        return self.pid
+        self.shells['first'] = KonsoleSession(parent_id=self.pid, create=False)
 
     def new_konsole(self, title):
         sh = KonsoleSession(parent_id=self.pid, name=title)
-        self.shells[sh.sid] = sh
+        self.shells[title] = sh
+
+    def run(self, shell_name, cmd):
+        self.shells[shell_name].run(cmd)
+
