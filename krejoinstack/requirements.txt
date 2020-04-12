@@ -1,2 +1,3 @@
 paramiko
 oslo_concurrency
+pyyaml

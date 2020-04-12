@@ -1,23 +1,17 @@
 sessions:
   units:
-    - nova-compute-kvm*:
+    - nova-compute-kvm.*:
         shells:
-          - - 'nova compute logs'
-            - 'tail -f /var/log/nova/nova-compute.log'
-            - - 'top'
-            - 'top'
-          - - 'libvirt logs'
-            - 'tailf -f /var/log/libvirt/log.log'
+          nova-compute.log: 'tail -f /var/log/nova/nova-compute.log'
+          top: 'top'
+          libvirt.log: 'tailf -f /var/log/libvirt/log.log'
     - etcd/0:
         shells:
-          - - 'config files'
-            - 'vi /etc/etcd/etcd.conf'
+          'config files': 'vi /etc/etcd/etcd.conf'
   machines:
     - 0:
         shells:
-          - - 'juju logs'
-            - 'tail -f /var/log/juju/bla.log'
-    - 8/lxd/*:
+          'juju logs': 'tail -f /var/log/juju/bla.log'
+    - 8/lxd/.*:
         shells:
-          - - 'juju logs'
-              - 'tail -f /var/log/juju/bla.log'
+          'juju logs': 'tail -f /var/log/juju/bla.log'
