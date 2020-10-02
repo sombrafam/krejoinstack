@@ -39,7 +39,7 @@ class KonsoleSession(object):
         self.name = name
         self.parent_id = parent_id
 
-        LOG.warning("Konsole version: %s", six.text_type(KonsoleSession.version))
+        LOG.debug("Konsole version: %s", six.text_type(KonsoleSession.version))
 
         # the first session is created automatically
         if not create:
@@ -48,7 +48,7 @@ class KonsoleSession(object):
 
         cmd = KonsoleSession.new_session_cmd % {'kid': self.parent_id}
         cmd = cmd.split()
-        LOG.warning("cmd: %s", cmd)
+        LOG.debug("cmd: %s", cmd)
 
         retries = 5
         while retries > 0:
@@ -56,7 +56,7 @@ class KonsoleSession(object):
                 out = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
                 break
             except subprocess.CalledProcessError:
-                LOG.warning("Process not yet ready. Waiting 0.5 sec")
+                LOG.debug("Process not yet ready. Waiting 0.5 sec")
                 time.sleep(0.5)
                 retries -= 1
 
@@ -96,7 +96,7 @@ class Konsole(object):
 
         self.pid = proc.pid
 
-        LOG.warning("Created console %s", six.text_type(self.pid))
+        LOG.debug("Created console %s", six.text_type(self.pid))
         self.shells[first_shell_name] = KonsoleSession(parent_id=self.pid,
                                                        create=False,
                                                        name=first_shell_name)

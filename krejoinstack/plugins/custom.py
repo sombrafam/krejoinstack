@@ -13,6 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import json
 import logging as log
 import sys
 import yaml
@@ -38,20 +39,42 @@ class CustomShells(base.KRJPlugin):
         pass
 
     def _load_shells(self):
-        if self.configs.template:
-            LOG.warning("Parsing template file: %s" % self.configs.template)
-            stream = open(self.configs.template, 'r')
-            json_template = yaml.load(stream, Loader=yaml.FullLoader)
-
-            sessions = json_template.get('sessions', [])
-            if len(sessions) == 0:
-                LOG.warning("Malformated template file. 'sessions' not defined")
-                sys.exit(1)
-
-            self.sessions = sessions
-        else:
-            LOG.warning("--template option is needed for the Custom plugin")
+        if not self.configs.custom_template:
+            LOG.error("--template option is needed for the Custom plugin")
             sys.exit(1)
+
+        LOG.debug("Parsing template file: %s",
+                    self.configs.custom_template)
+        try:
+            stream = open(self.configs.custom_template, 'r')
+        except FileNotFoundError:
+            LOG.error("Can't find template file %s",
+                      self.configs.custom_template)
+            sys.exit(1)
+        json_template = yaml.load(stream, Loader=yaml.FullLoader)
+
+        # Basic validations
+        LOG.debug("Checking template: %s",
+                  json.dumps(json_template, indent=2))
+        sessions = json_template.get('sessions', [])
+        if len(sessions) == 0:
+            LOG.error("Malformated template file. 'sessions' not defined")
+            sys.exit(1)
+
+        for window in sessions:
+            LOG.debug('Looping over window: %s', window)
+            if window.get('tabs') is None:
+                LOG.error("No tabs detected on %s", window)
+                LOG.error("Please check your syntax.")
+                sys.exit(1)
+            for tab_name, commands in window['tabs'].items():
+                if len(commands) == 0:
+                    LOG.error("No commands found for window %s tab %s",
+                              window, tab_name)
+                    LOG.error("Please check your syntax.")
+                    sys.exit(1)
+
+        self.sessions = sessions
 
     @staticmethod
     def add_args(parser):

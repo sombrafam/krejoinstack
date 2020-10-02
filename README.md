@@ -40,11 +40,11 @@ krejoin [-h] <plugin> [plugin-options] <host>
 Host:
   The host might be 'localhost' or any hostname or IP. If <host> is not
   'localhost', SSH key-based authentication must be configured from this
-  machine to the host. 
+  machine to the host.
 Available Plugins:
    --juju
    --docker
-   --custom-yaml
+   --custom
 PLugin Options:
     Juju Cloud options (--juju):
       --model: The model to search for the units/machines. Defaults to the model 
@@ -65,12 +65,12 @@ PLugin Options:
       --open-logs: Open 1 shell with the logs for the application. If no option is
         added this is default.
       --open-shell: Open 1 shell on sudo for each unit of the application.
-    Docker deplyment option (--docker):
+    Docker deployment option (--docker):
       --include-pods:
       --exclude-pods:
       --open-logs:
       --open-shell:
-    Custom YAML options (--custom-yaml):
+    Custom YAML options (--custom):
       --custom-template: Load all shells based on this template.
       --print-skell: Prints a sample template example.
 

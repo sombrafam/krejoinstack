@@ -29,7 +29,7 @@ class KRJPlugin(ABC):
     name = None
 
     def __init__(self, plugin_args):
-        self.konsole = konsole.Konsole('')
+        self.konsole = None
         self.sessions = []
         self.configs = plugin_args
 
@@ -38,14 +38,12 @@ class KRJPlugin(ABC):
 
     def spawn(self):
         self._load_shells()
+        self.konsole = konsole.Konsole('')
         for window in self.sessions:
-            LOG.warning("Looping over windows: %s", window)
             k = self.konsole
             for tab_name, commands in window['tabs'].items():
-                LOG.warning("Looping over tabs: %s", tab_name)
                 k.new_tab(tab_name)
                 for cmd in commands:
-                    LOG.warning("Looping over commands: %s", cmd)
                     k.run(tab_name, cmd)
 
 

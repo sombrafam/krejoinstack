@@ -20,16 +20,24 @@ from krejoinstack.plugins.devstack import Devstack
 from krejoinstack.plugins.custom import CustomShells
 
 LOG = log.getLogger("krejoin")
-f_handler = log.FileHandler('krejoinstack.log')
+formatter = log.Formatter('%(levelname)s: %(message)s')
+
+c_handler = log.StreamHandler()
+c_handler.setLevel(log.INFO)
+c_handler.setFormatter(formatter)
+LOG.addHandler(c_handler)
+
+f_handler = log.FileHandler('/tmp/krejoinstack.log')
 f_handler.setLevel(log.DEBUG)
-formatter = log.Formatter('%(asctime)s - %(levelname)s: %(message)s')
 f_handler.setFormatter(formatter)
 LOG.addHandler(f_handler)
 
+# Always start in debug mode so we can debug what happens before we read
+# the --debug option.
+LOG.setLevel(log.DEBUG)
+
 ALL_BACKENDS = [JujuSessions, Devstack, CustomShells]
 
-def help():
-    pass
 
 def main():
     parser = argparse.ArgumentParser(
@@ -39,12 +47,20 @@ def main():
     plugin_selector_group.add_argument("--devstack", action='store_true')
     plugin_selector_group.add_argument("--custom", action='store_true',
                                        help=CustomShells.help())
+    parser.add_argument("--debug", action="store_true", required=False,
+                        help="Enables debugging to STDOUT")
     parser.add_argument("host", metavar='<user@host>')
 
     for be in [JujuSessions, Devstack, CustomShells]:
         be.add_args(parser)
 
     args = parser.parse_args()
+    if args.debug:
+        c_handler.setLevel(log.DEBUG)
+    else:
+        # Disables debug if the user didn't not call --debug as it was set to
+        # DEBUG previously
+        LOG.setLevel(log.INFO)
 
     backend = None
     for be in [(args.juju, JujuSessions),
@@ -59,12 +75,11 @@ def main():
         print("Error! No backend found!")
         exit(1)
 
-    LOG.warning("Spawning sessions")
-    print("Bla")
     backend.spawn()
 
 
 if __name__ == "__main__":
+    LOG.info("krejoing stack starting")
     main()
 
     exit(0)

@@ -11,11 +11,11 @@ sessions:
         - 'juju ssh mysql/0'
         - 'tail -f /var/log/mysql/error.log'
   - window-2:
-      tabs:
-        code:
-          - 'cd $HOME/internal_git'
-          - 'ls -la'
-        node shell:
-          - 'docker exec -it b0e047bcf605 /bin/bash'
-        node logs:
-          - 'docker logs b0e047bcf605'
+    tabs:
+      code:
+        - 'cd $HOME/internal_git'
+        - 'ls -la'
+      node shell:
+        - 'docker exec -it b0e047bcf605 /bin/bash'
+      node logs:
+        - 'docker logs b0e047bcf605'
