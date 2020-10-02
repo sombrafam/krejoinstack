@@ -13,23 +13,32 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-
-import konsole
 import argparse
+import logging as log
 from krejoinstack.plugins.juju import JujuSessions
 from krejoinstack.plugins.devstack import Devstack
 from krejoinstack.plugins.custom import CustomShells
 
+LOG = log.getLogger("krejoin")
+f_handler = log.FileHandler('krejoinstack.log')
+f_handler.setLevel(log.DEBUG)
+formatter = log.Formatter('%(asctime)s - %(levelname)s: %(message)s')
+f_handler.setFormatter(formatter)
+LOG.addHandler(f_handler)
+
 ALL_BACKENDS = [JujuSessions, Devstack, CustomShells]
 
+def help():
+    pass
 
 def main():
-    parser = argparse.ArgumentParser(description='Open windowns from a given'
-                                                 'environment into Konsole')
+    parser = argparse.ArgumentParser(
+        description='Open windows from a given environment into Konsole tabs.')
     plugin_selector_group = parser.add_mutually_exclusive_group(required=True)
     plugin_selector_group.add_argument("--juju", action='store_true')
     plugin_selector_group.add_argument("--devstack", action='store_true')
-    plugin_selector_group.add_argument("--custom", action='store_true')
+    plugin_selector_group.add_argument("--custom", action='store_true',
+                                       help=CustomShells.help())
     parser.add_argument("host", metavar='<user@host>')
 
     for be in [JujuSessions, Devstack, CustomShells]:
@@ -50,6 +59,8 @@ def main():
         print("Error! No backend found!")
         exit(1)
 
+    LOG.warning("Spawning sessions")
+    print("Bla")
     backend.spawn()
 
 

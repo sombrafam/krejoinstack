@@ -1,0 +1,7 @@
+# If any of the units or machines specifyed by the user match one of these,
+# krejoin will open the shells as listed in this config file.
+sessions:
+  units:
+    - ^kubernetes-(master|worker).*$:
+        shells:
+          kube logs: 'sudo journalctl -afu *kube*'

@@ -75,7 +75,7 @@ class JujuSessions(base.KRJPlugin):
                 target = list(target_dict.keys())[0]
                 shells = list(target_dict.values())[0].get('shells', None)
                 if not shells:
-                    self.konsole.new_konsole(target)
+                    self.konsole.new_tab(target)
                     self.konsole.shells[target].ssh_connect(
                         self.host, user=self.bastion_user)
                     self.konsole.run(target, 'juju ssh %s' % target)
@@ -83,7 +83,7 @@ class JujuSessions(base.KRJPlugin):
 
                     for command_name, command in shells.items():
                         shell_name = "%s: %s" % (target, command_name)
-                        self.konsole.new_konsole(shell_name)
+                        self.konsole.new_tab(shell_name)
                         self.konsole.shells[shell_name].ssh_connect(
                             self.host, user=self.bastion_user)
                         self.konsole.run(shell_name, 'juju ssh %s' % target)
@@ -172,7 +172,7 @@ class JujuSessions(base.KRJPlugin):
             help='Group similar services into distict windows.')
         # Optional: Loads from a template YAML file
         juju_parameters.add_argument(
-            "--template", metavar='<template file path>',
+            "--juju-template", metavar='<template file path>',
             help='Loads Juju shells based on this template.')
         # Optional: Opens only the units/machines matching to regex
         juju_parameters.add_argument(

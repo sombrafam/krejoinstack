@@ -14,15 +14,40 @@
 #    under the License.
 
 from abc import ABC, abstractmethod
+import logging as log
 
 import krejoinstack.konsole as konsole
+
+LOG = log.getLogger("krejoin")
+
+
+class NotImplementedError(Exception):
+    pass
 
 
 class KRJPlugin(ABC):
     name = None
 
-    def __init__(self):
-        self.konsole = konsole.Konsole()
+    def __init__(self, plugin_args):
+        self.konsole = konsole.Konsole('')
+        self.sessions = []
+        self.configs = plugin_args
+
+    def _load_shells(self):
+        raise NotImplementedError
+
+    def spawn(self):
+        self._load_shells()
+        for window in self.sessions:
+            LOG.warning("Looping over windows: %s", window)
+            k = self.konsole
+            for tab_name, commands in window['tabs'].items():
+                LOG.warning("Looping over tabs: %s", tab_name)
+                k.new_tab(tab_name)
+                for cmd in commands:
+                    LOG.warning("Looping over commands: %s", cmd)
+                    k.run(tab_name, cmd)
+
 
     @staticmethod
     @abstractmethod

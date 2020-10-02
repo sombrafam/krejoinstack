@@ -1,0 +1,1 @@
+qdbus org.kde.konsole-32110  $KONSOLE_DBUS_SESSION org.kde.konsole.Session.runCommand 'sudo su-'

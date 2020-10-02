@@ -13,13 +13,13 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import logging
+import logging as log
 import time
 import six
 import subprocess
 from distutils import version
 
-LOG = logging.getLogger(__name__)
+LOG = log.getLogger("krejoin")
 NEW_KONSOLE_API_VERSION = version.LooseVersion('15.0.0')
 
 
@@ -39,7 +39,7 @@ class KonsoleSession(object):
         self.name = name
         self.parent_id = parent_id
 
-        LOG.info("Konsole version: %s", six.text_type(KonsoleSession.version))
+        LOG.warning("Konsole version: %s", six.text_type(KonsoleSession.version))
 
         # the first session is created automatically
         if not create:
@@ -48,11 +48,22 @@ class KonsoleSession(object):
 
         cmd = KonsoleSession.new_session_cmd % {'kid': self.parent_id}
         cmd = cmd.split()
-        out = subprocess.check_output(cmd)
-        self.sid = int(out)
-        self.rename(name)
+        LOG.warning("cmd: %s", cmd)
 
-    def rename(self, name):
+        retries = 5
+        while retries > 0:
+            try:
+                out = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+                break
+            except subprocess.CalledProcessError:
+                LOG.warning("Process not yet ready. Waiting 0.5 sec")
+                time.sleep(0.5)
+                retries -= 1
+
+        self.sid = int(out)
+        self._rename(name)
+
+    def _rename(self, name):
         cmd = KonsoleSession.set_title_cmd % {'kid': self.parent_id, 'sid': self.sid}
         cmd = cmd.split()
         cmd.append(name)
@@ -72,7 +83,7 @@ class KonsoleSession(object):
 
 
 class Konsole(object):
-    def __init__(self):
+    def __init__(self, first_shell_name):
         self.pid = 0
         self.shells = {}
 
@@ -85,10 +96,12 @@ class Konsole(object):
 
         self.pid = proc.pid
 
-        LOG.info("Created console %s", six.text_type(self.pid))
-        self.shells['first'] = KonsoleSession(parent_id=self.pid, create=False)
+        LOG.warning("Created console %s", six.text_type(self.pid))
+        self.shells[first_shell_name] = KonsoleSession(parent_id=self.pid,
+                                                       create=False,
+                                                       name=first_shell_name)
 
-    def new_konsole(self, title):
+    def new_tab(self, title):
         sh = KonsoleSession(parent_id=self.pid, name=title)
         self.shells[title] = sh
 

@@ -1,0 +1,14 @@
+sessions:
+  - window1:
+    tabs:
+      tab1name:
+        - 'tab1cmd1 --params'
+      tab2name:
+        - 'tab2cmd1 --param1 --param2'
+        - 'tab2ccmd2'
+      tabNnam:
+        - 'tabNcommandN'
+  - window2:
+      tabs:
+        tabNname:
+          - 'tabNcmd1'
