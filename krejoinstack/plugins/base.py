@@ -38,9 +38,8 @@ class KRJPlugin(ABC):
 
     def spawn(self):
         self._load_shells()
-        self.konsole = konsole.Konsole('')
         for window in self.sessions:
-            k = self.konsole
+            k = konsole.Konsole('')
             for tab_name, commands in window['tabs'].items():
                 k.new_tab(tab_name)
                 for cmd in commands:
