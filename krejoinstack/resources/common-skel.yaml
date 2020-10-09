@@ -5,9 +5,9 @@ sessions:
         - 'tab1cmd1 --params'
       tab2name:
         - 'tab2cmd1 --param1 --param2'
-        - 'tab2ccmd2'
-      tabNnam:
-        - 'tabNcommandN'
+        - 'tab2cmd2'
+      tabNname:
+        - 'tabMcommandK'
   - window2:
       tabs:
         tabNname:

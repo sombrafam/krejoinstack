@@ -15,6 +15,7 @@
 
 import json
 import logging as log
+import os
 import sys
 import yaml
 
@@ -28,15 +29,21 @@ class CustomShells(base.KRJPlugin):
 
     def __init__(self, plugin_args):
         self.configs = plugin_args
-        if self.configs.print_skell:
-            self._print_skel()
-            exit(0)
-
         super(CustomShells, self).__init__(plugin_args)
 
-    def _print_skel(self):
-        # TODO: Implement this
-        pass
+    @staticmethod
+    def print_skel():
+        abs_path = os.path.abspath(__file__)
+        parent_path = "/".join(abs_path.split('/')[:-2])
+        file_path = parent_path + "/resources/common-skel.yaml"
+        try:
+            stream = open(file_path, 'r')
+        except FileNotFoundError:
+            LOG.debug("abs_path: %s", abs_path)
+            LOG.debug("cwd: %s", os.path.abspath(os.getcwd()))
+            LOG.error("Can't find template file %s", file_path)
+            sys.exit(1)
+        return stream.read()
 
     def _load_shells(self):
         if not self.configs.custom_template:
@@ -82,16 +89,15 @@ class CustomShells(base.KRJPlugin):
         custom_parameters.add_argument(
             "--custom-template", metavar='<template file path>',
             help='Loads windows and tab based on this template.')
-        custom_parameters.add_argument(
-            "--print-skell", action='store_true',
-            help='Prints a sample template example.')
 
     @staticmethod
     def help():
-        msg = ("This template allows you to especify command sequences to be "
-               "run in each window and tab. It reads the layout from a YAML "
-               "file. The commands don't need to be mean to run in the local "
-               "machine. If you ssh to another host, the next command will be "
-               "run in that host.")
+        msg = ("This template allows you to especify command sequences to be\n"
+               "run in each window and tab. It reads the layout from a YAML\n"
+               "file. The commands don't need to be mean to run in the local\n"
+               "machine. If you ssh to another host, the next command will \n"
+               "be run in that host. Bellow a snippet of the YAML format\n"
+               "used: \n\n")
+        msg = msg + CustomShells.print_skel() + '\n'
         return msg
 

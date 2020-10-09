@@ -21,10 +21,6 @@ import krejoinstack.konsole as konsole
 LOG = log.getLogger("krejoin")
 
 
-class NotImplementedError(Exception):
-    pass
-
-
 class KRJPlugin(ABC):
     name = None
 
@@ -44,7 +40,6 @@ class KRJPlugin(ABC):
                 k.new_tab(tab_name)
                 for cmd in commands:
                     k.run(tab_name, cmd)
-
 
     @staticmethod
     @abstractmethod

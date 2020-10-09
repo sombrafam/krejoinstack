@@ -51,7 +51,6 @@ PLugin Options:
         that is logged.
       --machines: Open one shell terminal for each machine. **Excludes all the
         other options.**
-    
       --group-applications: Group similar services into distict windows
       --template: Loads Juju shells based on this template
       --export-template: Dumps the current template into a file so you can edit and

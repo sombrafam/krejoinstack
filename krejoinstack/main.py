@@ -41,7 +41,9 @@ ALL_BACKENDS = [JujuSessions, Devstack, CustomShells]
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Open windows from a given environment into Konsole tabs.')
+        description='Open windows from a given environment into Konsole tabs.',
+        formatter_class=argparse.RawTextHelpFormatter
+    )
     plugin_selector_group = parser.add_mutually_exclusive_group(required=True)
     plugin_selector_group.add_argument("--juju", action='store_true')
     plugin_selector_group.add_argument("--devstack", action='store_true')
@@ -79,7 +81,6 @@ def main():
 
 
 if __name__ == "__main__":
-    LOG.info("krejoing stack starting")
     main()
 
     exit(0)
