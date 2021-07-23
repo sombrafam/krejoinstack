@@ -19,7 +19,7 @@ Using the Konsole graphical terminal has some advantages:
 - Many other features and desktop integration;
 
 
-# # How to use
+## How to use
 
 1. Install konsole in you desktop (tested on Ubuntu systems only):
 

@@ -24,29 +24,31 @@ NEW_KONSOLE_API_VERSION = version.LooseVersion('15.0.0')
 
 
 class KonsoleSession(object):
-    cmd_output = subprocess.check_output(('konsole', '--version'))
-    version = version.LooseVersion(cmd_output.decode('utf-8').split()[1])
-
-    set_title_cmd = "qdbus org.kde.konsole-%(kid)s /Sessions/%(sid)s setTitle 1"
-    exec_cmd = "qdbus org.kde.konsole-%(kid)s /Sessions/%(sid)s runCommand"
-
-    if version < NEW_KONSOLE_API_VERSION:
-        new_session_cmd = "qdbus org.kde.konsole-%(kid)s /Konsole newSession"
-    else:
-        new_session_cmd = "qdbus org.kde.konsole-%(kid)s /Windows/1 newSession"
-
     def __init__(self, parent_id, create=True, name=None):
-        self.name = name
-        self.parent_id = parent_id
+        self.cmd_output = subprocess.check_output(('konsole', '--version'))
+        self.version = version.LooseVersion(self.cmd_output.decode('utf-8').split()[1])
 
-        LOG.debug("Konsole version: %s", six.text_type(KonsoleSession.version))
+        self.set_title_cmd = \
+            "qdbus org.kde.konsole-%(kid)s /Sessions/%(sid)s setTitle 1"
+        self.exec_cmd = \
+            "qdbus org.kde.konsole-%(kid)s /Sessions/%(sid)s runCommand"
+
+        if self.version < NEW_KONSOLE_API_VERSION:
+            self.new_session_cmd = \
+                "qdbus org.kde.konsole-%(kid)s /Konsole newSession"
+        else:
+            self.new_session_cmd = "qdbus org.kde.konsole-%(kid)s /Windows/1 newSession"
+            self.name = name
+            self.parent_id = parent_id
+
+            LOG.debug("Konsole version: %s", six.text_type(self.version))
 
         # the first session is created automatically
         if not create:
             self.sid = 1
             return
 
-        cmd = KonsoleSession.new_session_cmd % {'kid': self.parent_id}
+        cmd = self.new_session_cmd % {'kid': self.parent_id}
         cmd = cmd.split()
         LOG.debug("cmd: %s", cmd)
 
@@ -64,13 +66,13 @@ class KonsoleSession(object):
         self._rename(name)
 
     def _rename(self, name):
-        cmd = KonsoleSession.set_title_cmd % {'kid': self.parent_id, 'sid': self.sid}
+        cmd = self.set_title_cmd % {'kid': self.parent_id, 'sid': self.sid}
         cmd = cmd.split()
         cmd.append(name)
         subprocess.call(cmd)
 
     def run(self, shell_cmd):
-        cmd = KonsoleSession.exec_cmd % {'kid': self.parent_id, 'sid': self.sid}
+        cmd = self.exec_cmd % {'kid': self.parent_id, 'sid': self.sid}
         cmd = cmd.split()
         cmd.append(shell_cmd)
         LOG.debug("Runing command: %s" ' '.join(cmd))

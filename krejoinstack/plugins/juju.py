@@ -13,14 +13,13 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import argparse
 import yaml
 import re
-import time
 import sys
 
 import krejoinstack.plugins.base as base
 import krejoinstack.utils.ssh as ssh
+from  krejoinstack import konsole
 
 
 class JujuSessions(base.KRJPlugin):
@@ -34,8 +33,8 @@ class JujuSessions(base.KRJPlugin):
 
     def __init__(self, args):
 
-        super(JujuSessions, self).__init__()
-
+        super(JujuSessions, self).__init__(args)
+        self.konsole = konsole.Konsole("")
         if len(args.host.split('@')) > 1:
             self.bastion_user = args.host.split('@')[0]
             self.host = args.host.split('@')[1]
@@ -109,9 +108,9 @@ class JujuSessions(base.KRJPlugin):
             return fitered_units
 
         targets = []
-        if self.configs.template:
-            print("Parsing template file: %s" % self.configs.template)
-            stream = open(self.configs.template, 'r')
+        if self.configs.juju_template:
+            print("Parsing template file: %s" % self.configs.juju_template)
+            stream = open(self.configs.juju_template, 'r')
             json_template = yaml.load(stream, Loader=yaml.FullLoader)
 
             sessions = json_template.get('sessions', None)

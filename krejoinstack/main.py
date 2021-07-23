@@ -64,12 +64,16 @@ def main():
         # DEBUG previously
         LOG.setLevel(log.INFO)
 
+    print("%s" % str(args))
+    print("args.juju: %s" % str(args.juju))
+    print("args.devstack: %s" % str(args.devstack))
+    print("args.custom: %s" % str(args.custom))
+
     backend = None
-    for be in [(args.juju, JujuSessions),
-               (args.devstack, Devstack),
-               (args.custom, CustomShells)]:
-        if be[0]:
-            backend_class = be[1]
+    for be_is_enabled, backend_class in [(args.juju, JujuSessions),
+                                         (args.devstack, Devstack),
+                                         (args.custom, CustomShells)]:
+        if be_is_enabled:
             backend = backend_class(args)
             break
 
