@@ -15,7 +15,7 @@ netifaces==0.10.9
 oslo.concurrency==3.30.0
 oslo.config==6.11.1
 oslo.i18n==3.24.0
-oslo.utils==3.41.2
+oslo.utils==4.10.1
 paramiko==2.10.1
 pbr==5.4.3
 pycparser==2.19
